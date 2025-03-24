@@ -1,9 +1,11 @@
 import React from 'react'
-import 'primereact/resources/themes/mira/theme.css';
+import 'primereact/resources/themes/lara-dark-amber/theme.css';
 import 'primeflex/primeflex.css'
 import 'primeicons/primeicons.css'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage';
+import { RandomWord } from './components/RandomWord';
+import { GuessWordsWithLetters } from './components/GuessWordsWithLetters';
 
 function App() {
     return (
@@ -13,6 +15,18 @@ function App() {
                 index
                 element={
                     <HomePage />
+                }
+            />
+            <Route
+                path='/randomWord'
+                element={
+                    <RandomWord />
+                }
+            />
+            <Route
+                path='/guessWordsLetters'
+                element={
+                    <GuessWordsWithLetters />
                 }
             />
         </Routes>
