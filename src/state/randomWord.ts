@@ -1,4 +1,4 @@
-import { createEffect, createStore, attach } from "effector";
+import { createEffect, createStore, attach, createEvent, sample } from "effector";
 import { $words, Word } from "./words";
 
 export const $randomWord = createStore<Word|null>(null);
@@ -16,3 +16,55 @@ export const generateRandomWordFx = attach({
 });
 
 $randomWord.on(generateRandomWordFx.doneData, (_, state) => state);
+
+export const $triesCount = createStore<number>(0);
+export const setTriesCount = createEvent<number>();
+$triesCount.on(setTriesCount, (_, state) => state);
+
+export const $win = createStore<boolean>(false);
+export const setWin = createEvent<boolean>();
+$win.on(setWin, (_, state) => state);
+
+export const $maxTries = createStore<number>(5);
+export const setMaxTries = createEvent<number>();
+$maxTries.on(setMaxTries, (_, state) => state);
+
+interface Letter {
+    valid?: 'yes' | 'no' | 'present';
+    value: string;
+}
+
+type ValueType = { letters: Letter[][] };
+export const $value = createStore<ValueType>({ letters: [] });
+export const setValue = createEvent<ValueType>();
+$value.on(setValue, (_, state) => state);
+
+export const reset = createEvent();
+sample({
+    clock: reset,
+    target: createEffect(() => {
+        setWin(false);
+        setTriesCount(0);
+        setValue({ letters: [] });
+        generateRandomWordFx();
+    })
+})
+
+export const guessFx = attach({
+    source: { randomWord: $randomWord, value: $value, triesCount: $triesCount },
+    effect: createEffect(({ randomWord, value, triesCount }: { randomWord: Word | null, value: ValueType, triesCount: number }) => {
+        if ( !randomWord || !value.letters.length ) return;
+
+        value.letters[value.letters.length-1] = value.letters[value.letters.length-1].map((letter, i) => ({
+            value: letter.value,
+            valid: randomWord.key[i] === letter.value ? 'yes' : randomWord.key.indexOf(letter.value) !== -1 ? 'present' : 'no'  
+        }))
+        setValue({ ...value });
+        
+        setTriesCount(triesCount+1);
+        if ( randomWord.key.length === value.letters[value.letters.length-1].length 
+            && value.letters[value.letters.length-1].every( letter => letter.valid === 'yes' ) ) {
+            setWin(true);
+        }
+    })
+});

@@ -1,24 +1,18 @@
 import { useUnit } from 'effector-react';
 import { Button } from 'primereact/button';
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { InputText } from 'primereact/inputtext';
 import { Divider } from 'primereact/divider';
-import { $randomWord, generateRandomWordFx } from '../../state/randomWord';
-
-interface Letter {
-    valid?: 'yes' | 'no' | 'present';
-    value: string;
-}
-
-const maxTries = 5;
+import { $maxTries, $randomWord, $triesCount, $value, $win, setValue, reset, guessFx } from '../../state/randomWord';
 
 export const RandomWord = () => {
     const navigate = useNavigate();
     const randomWord = useUnit($randomWord);
-    const [triesCount, setTriesCount] = useState<number>(0);
-    const [win, setWin] = useState<boolean>(false);
-    const [value, setValue] = useState<{ letters: Letter[][] }>({ letters: [] });
+    const triesCount = useUnit($triesCount);
+    const maxTries = useUnit($maxTries);
+    const win = useUnit($win);
+    const value = useUnit($value);
     const refs = [...Array(30)].map( () => useRef(null) );
 
     const onChange = (row: number, col: number, letter: string, moveTo: number) => {
@@ -36,27 +30,6 @@ export const RandomWord = () => {
         (refs[moveTo]?.current as any)?.focus?.();
     }
     
-    const guess = () => {
-        if ( !randomWord ) return;
-
-        value.letters[value.letters.length-1] = value.letters[value.letters.length-1].map((letter, i) => ({
-            value: letter.value,
-            valid: randomWord.key[i] === letter.value ? 'yes' : randomWord.key.indexOf(letter.value) !== -1 ? 'present' : 'no'  
-        }))
-        setValue({ ...value });
-
-        setTriesCount(triesCount+1);
-        if ( value.letters[value.letters.length-1].every( letter => letter.valid === 'yes' ) ) {
-            setWin(true);
-        }
-    }
-    
-    const reset = () => {
-        setTriesCount(0);
-        setValue({ letters: [] });
-        generateRandomWordFx();
-    }
-    
     return (
     <div>
         <div className='m-2'><Button onClick={() => navigate('/')}><i className='pi pi-home' /></Button></div>
@@ -72,8 +45,8 @@ export const RandomWord = () => {
                 <div className='overflow-auto'>
                     <table className='w-min m-auto'>
                     <tbody>
-                        {[...Array(maxTries)].map((v, i) => (
-                            <tr key={`r-${i}`}>
+                        {[...Array(triesCount < maxTries ? triesCount + 1 : maxTries)].map((v, i) => (
+                            <tr key={`r-${i}`} className={`row-${i !== triesCount && i%2 === 0 ? 'even' : 'odd'}`}>
                                 {[...Array(randomWord.key.length)].map( (v, k) => {
                                     const letter = value.letters[i]?.[k];
                                     return (
@@ -111,8 +84,8 @@ export const RandomWord = () => {
                 <i className='pi pi-face-smile text-primary ml-3' />
             </h3>)}
             <div className='mt-5 flex align-items-center gap-5'>
-                {!win && !!randomWord && triesCount < maxTries && <Button onClick={guess}>Deviner</Button>}
-                <Button severity={ randomWord ? 'danger' : 'info'} onClick={reset}><i className='pi pi-refresh' />{!randomWord && (<span className='ml-2 font-bold'>Nouvelle partie</span>)}</Button>
+                {!win && !!randomWord && triesCount < maxTries && <Button onClick={() => guessFx()}>Deviner</Button>}
+                <Button severity={ randomWord ? 'danger' : 'info'} onClick={() => reset()}><i className='pi pi-refresh' />{!randomWord && (<span className='ml-2 font-bold'>Nouvelle partie</span>)}</Button>
             </div>
         </div>
     </div>

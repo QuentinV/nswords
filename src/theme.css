@@ -27,3 +27,11 @@
 .elem-present {
     color: grey;
 }
+
+table {
+    border-spacing: 0;
+}
+
+tr.row-even {
+    background-color: #c7d0ff05;
+}
