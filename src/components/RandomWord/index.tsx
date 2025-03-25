@@ -17,6 +17,7 @@ export const RandomWord = () => {
     const navigate = useNavigate();
     const randomWord = useUnit($randomWord);
     const [triesCount, setTriesCount] = useState<number>(0);
+    const [win, setWin] = useState<boolean>(false);
     const [value, setValue] = useState<{ letters: Letter[][] }>({ letters: [] });
     const refs = [...Array(30)].map( () => useRef(null) );
 
@@ -29,20 +30,27 @@ export const RandomWord = () => {
             value.letters[row] = [];
         }
 
-        value.letters[row][col] = { value: letter };
+        value.letters[row][col] = { value: letter?.toUpperCase() };
         setValue({ ...value });
         
         (refs[moveTo]?.current as any)?.focus?.();
     }
     
     const guess = () => {
-        const word = value.letters[value.letters.length-1].join('');
-        if ( word === randomWord?.key ) {
-            alert('wazzaa');
-        }
-        setTriesCount(triesCount+1);
-    }
+        if ( !randomWord ) return;
 
+        value.letters[value.letters.length-1] = value.letters[value.letters.length-1].map((letter, i) => ({
+            value: letter.value,
+            valid: randomWord.key[i] === letter.value ? 'yes' : randomWord.key.indexOf(letter.value) !== -1 ? 'present' : 'no'  
+        }))
+        setValue({ ...value });
+
+        setTriesCount(triesCount+1);
+        if ( value.letters[value.letters.length-1].every( letter => letter.valid === 'yes' ) ) {
+            setWin(true);
+        }
+    }
+    
     const reset = () => {
         setTriesCount(0);
         setValue({ letters: [] });
@@ -66,34 +74,45 @@ export const RandomWord = () => {
                     <tbody>
                         {[...Array(maxTries)].map((v, i) => (
                             <tr key={`r-${i}`}>
-                                {[...Array(randomWord.key.length)].map( (v, k) => (
-                                    <td className='p-2 text-center' key={`c-${k}`}>
-                                        {i === triesCount && triesCount < maxTries ? 
-                                        (<InputText 
-                                            ref={refs[k]}
-                                            className='w-2rem p-1 text-center' 
-                                            autoFocus={k === 0}
-                                            value={value.letters[i]?.[k]?.value ?? ''} 
-                                            onKeyDown={event => {
-                                                if ( event.code === 'Backspace' && !(event.target as any).value ) {
-                                                    event.preventDefault();
-                                                    onChange(i, k-1, '', k-1);
-                                                }
-                                            }}
-                                            onChange={event => onChange(i, k, event.target.value, event.target.value ? k + 1 : k - 1)} />) : 
-                                        value.letters[i]?.[k]?.value}
-                                    </td>
-                                ))}
+                                {[...Array(randomWord.key.length)].map( (v, k) => {
+                                    const letter = value.letters[i]?.[k];
+                                    return (
+                                        <td 
+                                            className={ `p-2 text-center ${i !== triesCount && value.letters[i] && (letter?.valid === 'yes' ? 'elem-ok' : letter?.valid === 'present' ? 'elem-present' : 'elem-none' )}` } 
+                                            key={`c-${k}`}
+                                        >
+                                            {!win && i === triesCount && triesCount < maxTries ? 
+                                            (<InputText 
+                                                ref={refs[k]}
+                                                className='w-2rem p-1 text-center' 
+                                                autoFocus={k === 0}
+                                                value={letter?.value ?? ''}
+                                                onKeyDown={event => {
+                                                    if ( event.code === 'Backspace' && !(event.target as any).value ) {
+                                                        event.preventDefault();
+                                                        onChange(i, k-1, '', k-1);
+                                                    }
+                                                }}
+                                                onChange={event => onChange(i, k, event.target.value, event.target.value ? k + 1 : k - 1)} />) : 
+                                            value.letters[i]?.[k]?.value}
+                                        </td>
+                                    )
+                                })}
                             </tr>
                         ))}
                     </tbody>
                     </table>
                 </div>
             </div>)}
-            {triesCount === maxTries && (<h3 className='color-red-100'>Dommage c&apos;est perdu!</h3>)}
+            {!win && triesCount === maxTries && (<h3 className='text-red-400'>Dommage c&apos;est perdu!</h3>)}
+            {win && (<h3 className='text-blue-400'>
+                <i className='pi pi-face-smile text-primary mr-3' /> 
+                Bravo c&apos;est gagné ! 
+                <i className='pi pi-face-smile text-primary ml-3' />
+            </h3>)}
             <div className='mt-5 flex align-items-center gap-5'>
-                {!!randomWord && triesCount < maxTries && <Button onClick={guess}>Deviner</Button>}
-                <Button severity='danger' onClick={reset}>{randomWord ? (<i className='pi pi-refresh' />) : 'Nouvelle partie'}</Button>
+                {!win && !!randomWord && triesCount < maxTries && <Button onClick={guess}>Deviner</Button>}
+                <Button severity={ randomWord ? 'danger' : 'info'} onClick={reset}><i className='pi pi-refresh' />{!randomWord && (<span className='ml-2 font-bold'>Nouvelle partie</span>)}</Button>
             </div>
         </div>
     </div>

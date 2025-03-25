@@ -9,7 +9,7 @@ export const generateRandomWordFx = attach({
         for(let word = null; !word; word = null) {
             word = words[Math.floor(Math.random() * words.length)];
             if ( word?.definition ) {
-                return word;
+                return { key: word.key.toUpperCase(), definition: word.definition };
             }
         }
     })
