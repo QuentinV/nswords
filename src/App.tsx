@@ -6,9 +6,11 @@ import { HashRouter, Route, Routes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage';
 import { RandomWord } from './components/RandomWord';
 import { GuessWordsWithLetters } from './components/GuessWordsWithLetters';
+import { DbInit } from './components/DbInit';
 
 function App() {
-    return (
+    return (<>
+    <DbInit />
     <HashRouter>
         <Routes>
             <Route
@@ -31,7 +33,7 @@ function App() {
             />
         </Routes>
     </HashRouter>
-    )
+    </>)
 }
 
 export default App

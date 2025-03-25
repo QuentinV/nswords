@@ -1,14 +1,12 @@
-import { createEffect, createEvent, createStore, sample } from "effector";
+import { createEffect, createStore, attach } from "effector";
 import { $words, Word } from "./words";
 
-export const $randomWord = createStore<string|null>(null);
-export const generateRandomWord = createEvent();
+export const $randomWord = createStore<Word|null>(null);
 
-sample({
+export const generateRandomWordFx = attach({
     source: $words,
-    clock: generateRandomWord,
-    target: createEffect((words: Word[]) => {
-        for(let word = null;!!word;) {
+    effect: createEffect((words: Word[]) => {
+        for(let word = null; !word; word = null) {
             word = words[Math.floor(Math.random() * words.length)];
             if ( word?.definition ) {
                 return word;
@@ -16,3 +14,5 @@ sample({
         }
     })
 });
+
+$randomWord.on(generateRandomWordFx.doneData, (_, state) => state);

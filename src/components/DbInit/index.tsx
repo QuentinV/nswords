@@ -23,9 +23,5 @@ export const DbInit = () => {
         })();
     }, []);
 
-    return (
-        <div>
-            {!words?.length && (<div>Initialization de la base de donnée</div>)}
-        </div>
-    );
+    return (<></>);
 }
