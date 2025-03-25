@@ -5,8 +5,6 @@ import 'primeicons/primeicons.css'
 import './theme.css';
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage';
-import { RandomWord } from './components/RandomWord';
-import { GuessWordsWithLetters } from './components/GuessWordsWithLetters';
 import { DbInit } from './components/DbInit';
 
 function App() {
@@ -18,18 +16,6 @@ function App() {
                 index
                 element={
                     <HomePage />
-                }
-            />
-            <Route
-                path='/randomWord'
-                element={
-                    <RandomWord />
-                }
-            />
-            <Route
-                path='/guessWordsLetters'
-                element={
-                    <GuessWordsWithLetters />
                 }
             />
         </Routes>

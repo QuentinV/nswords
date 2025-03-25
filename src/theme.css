@@ -16,6 +16,15 @@
     border-radius: 6px; /* Rounded corners */
 }
 
+.p-tabview-panels {
+    flex: 1;
+    background-color: #121212;
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    background-color: #121212;
+}
+
 .elem-ok {
     color: green;
 }

@@ -1,14 +1,16 @@
 import React from 'react';
-import { Button } from 'primereact/button';
-import { useNavigate } from 'react-router';
+import { TabView, TabPanel } from 'primereact/tabview';
+import { RandomWord } from '../components/RandomWord';
 
 export const HomePage = () => {
-    const navigate = useNavigate();
     return (
-        <div className='flex flex-column justify-content-center align-items-center gap-5 h-full'>
-            <h1 className='text-primary'>NsWords</h1>
-            <Button onClick={() => navigate('/randomWord')}>Devine un mot à partir d&apos;une définition</Button>
-            <Button onClick={() => navigate('/guessWordsLetters')}>Deviner plusieurs mot à partir de lettres</Button>
+        <div className='flex flex-column h-full'>
+            <h1 className='text-primary text-center'>NsWords</h1>
+            <TabView className='flex-1 flex flex-column'>
+                <TabPanel header="Mot mystère">
+                    <RandomWord />
+                </TabPanel>
+            </TabView>
         </div>
     );
 }
