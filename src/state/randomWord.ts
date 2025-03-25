@@ -15,7 +15,8 @@ export const generateRandomWordFx = attach({
     })
 });
 
-$randomWord.on(generateRandomWordFx.doneData, (_, state) => state);
+const setRandomWord = createEvent<Word|null>();
+$randomWord.on(generateRandomWordFx.doneData, (_, state) => state).on(setRandomWord, (_, state) => state);
 
 export const $triesCount = createStore<number>(0);
 export const setTriesCount = createEvent<number>();
@@ -68,3 +69,26 @@ export const guessFx = attach({
         }
     })
 });
+
+const loadFromLocalStorageFx = createEffect(() => {
+    const data = JSON.parse(localStorage.getItem('randomWordData') ?? '{}');
+    data?.$randomWord && setRandomWord(data.$randomWord);
+    data?.$triesCount && setTriesCount(data.$triesCount);
+    data?.$win && setWin(data.$win);
+    data?.$maxTries && setMaxTries(data.$maxTries);
+    data?.$value && setValue(data.$value);
+});
+
+const saveToLocalStorageFx = attach({
+    source: { $randomWord, $triesCount, $win, $maxTries, $value },
+    effect: createEffect((data: any) => {
+        localStorage.setItem('randomWordData', JSON.stringify(data));
+    })
+});
+
+sample({
+    source: [ $randomWord, $triesCount, $win, $maxTries, $value ],
+    target: saveToLocalStorageFx
+});
+
+loadFromLocalStorageFx();
