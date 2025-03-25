@@ -19,9 +19,10 @@
 .p-tabview-panels {
     flex: 1;
     background-color: #121212;
+    overflow: auto;
 }
 
-.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link, .p-tabview .p-tabview-nav li .p-tabview-nav-link {
     background-color: #121212;
 }
 

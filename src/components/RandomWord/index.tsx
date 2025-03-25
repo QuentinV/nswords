@@ -32,6 +32,7 @@ export const RandomWord = () => {
     return (
     <div className='flex flex-column align-items-center'>
         <h2>Devine un mot</h2>
+        {!!randomWord && (<div className='font-italic text-sm'>{randomWord?.key.length} lettres</div>)}
         {randomWord && (<div className='w-full'>
             <div>
                 <Divider className='col-8 m-auto mb-2' />

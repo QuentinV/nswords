@@ -6,7 +6,10 @@ export const HomePage = () => {
     return (
         <div className='flex flex-column h-full'>
             <h1 className='text-primary text-center'>NsWords</h1>
-            <TabView className='flex-1 flex flex-column'>
+            <TabView className='flex-1 flex flex-column overflow-hidden'>
+                <TabPanel header="Mots mélées">
+
+                </TabPanel>
                 <TabPanel header="Mot mystère">
                     <RandomWord />
                 </TabPanel>
