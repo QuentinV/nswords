@@ -1,7 +1,6 @@
 import { useUnit } from 'effector-react';
 import { Button } from 'primereact/button';
 import React, { useRef } from 'react';
-import { useNavigate } from 'react-router';
 import { InputText } from 'primereact/inputtext';
 import { Divider } from 'primereact/divider';
 import { $maxTries, $randomWord, $triesCount, $value, $win, setValue, reset, guessFx } from '../../state/randomWord';
@@ -31,12 +30,12 @@ export const RandomWord = () => {
     
     return (
     <div className='flex flex-column align-items-center'>
-        <h2>Devine un mot</h2>
+        <h2 className='mt-1 text-bluegray-200'>Devine un mot</h2>
         {!!randomWord && (<div className='font-italic text-sm'>{randomWord?.key.length} lettres</div>)}
         {randomWord && (<div className='w-full'>
             <div>
                 <Divider className='col-8 m-auto mb-2' />
-                <h4 className='pl-2 pr-2 m-auto col-10'>{randomWord?.definition}</h4>
+                <h4 className='pl-2 pr-2 m-auto col-10 text-bluegray-200'>{randomWord?.definition}</h4>
                 <Divider className='col-8 m-auto mt-2 mb-2' />
             </div>
             <div className='overflow-auto'>
