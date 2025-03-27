@@ -26,10 +26,6 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: install
-      - name: Run changelog
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: changelog
       - name: Run deploy
         uses: borales/actions-yarn@v4
         with:
