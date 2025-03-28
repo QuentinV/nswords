@@ -56,6 +56,8 @@ tr.row-even {
 .p-inputnumber-button {
     padding: 0.3rem;
     width: 1.5rem;
+    background-color: #ffc83a73;
+    border: none;
 }
 
 .lettersContainer {

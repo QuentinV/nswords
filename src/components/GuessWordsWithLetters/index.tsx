@@ -12,9 +12,14 @@ export const GuessWordsWithLetters = () => {
     const maxWordLength = useUnit($maxWordLength);
     const letters = useUnit($letters);
     const [selectedWord, setSelectedWord] = useState<string|null>();
+    const [trials, setTrials] = useState<number>(0);
 
     const onWordComplete = (word: string) => {
         setSelectedWord(null);
+        const found = wordsToGuess.find(w => w.key === word)
+        if ( !found ) {
+            setTrials(trials === 5 ? 1 : trials + 1);
+        }
     }
 
     return (
@@ -43,7 +48,15 @@ export const GuessWordsWithLetters = () => {
                 {w.key.split('').map( (l, k) => (<div key={k} className='letterBox'></div>))}
             </div>))}
         </div>
-        <div className='h-2rem mt-3 text-center text-primary' style={{ letterSpacing: '5px' }}>{selectedWord}</div>
+        <div className='h-2rem mt-5 mb-2 text-center text-primary' style={{ letterSpacing: '5px' }}>
+            {!!selectedWord && selectedWord}
+            {!selectedWord && (trials >= 5 ? 
+                (<a className='cursor-pointer hover:text-purple-500'>Besoin d&apos;aide ?</a>) : (trials >= 4 ? 
+                    (<span className='text-red-500'>Ne pas perdre espoir</span>)
+                : (trials >= 3 ? 
+                    (<span className='text-red-300'>Presque, ou pas</span>) 
+                : (trials >= 2 && (<span className='text-red-200'>Raté</span>)))))}
+        </div>
         <Divider className='mt-1' />
         <div className='mt-2 text-center relative h-15rem'>
             {!!wordsToGuess.length && (<div className='text-right absolute top-0 right-0 z-5'><i className='pi pi-refresh' onClick={() => reshuffleLetters()} /></div>)}

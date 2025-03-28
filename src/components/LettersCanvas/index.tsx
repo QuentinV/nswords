@@ -133,7 +133,7 @@ export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordCompl
 
 		letterPositions.forEach((letter) => {
 			const padding = 5;
-			ctx.fillStyle = "#f0f0f0";
+			ctx.fillStyle = "#fbbf24";
 			ctx.fillRect(
 				letter.x - letter.width / 2 - padding,
 				letter.y - letter.height / 2 - padding,
@@ -150,8 +150,8 @@ export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordCompl
 				letter.height + padding * 2
 			);
 
-			ctx.fillStyle = "black";
-			ctx.font = "20px Arial";
+			ctx.fillStyle = "#010d4ce0";
+			ctx.font = "bold 20px Arial";
 			ctx.textAlign = "center";
 			ctx.textBaseline = "middle";
 			ctx.fillText(letter.char, letter.x, letter.y);
