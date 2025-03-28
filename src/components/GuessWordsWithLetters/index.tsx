@@ -15,6 +15,7 @@ export const GuessWordsWithLetters = () => {
     const letters = useUnit($letters);
     const trials = useUnit($trials);
     const [selectedWord, setSelectedWord] = useState<string|null>();
+    const [optionsMenuVisible, setOptionsMenuVisible] = useState<boolean>(false);
 
     const onWordComplete = (word: string) => {
         setSelectedWord(null);
@@ -23,8 +24,11 @@ export const GuessWordsWithLetters = () => {
 
     return (
     <div>
-        <h2 className='mt-1 text-bluegray-200 text-center'>Devine tous les mots</h2>
-        <div className='w-11 text-center text-bluegray-200 m-auto'>
+        <h2 className='mt-1 text-bluegray-200 text-center'>
+            Devine tous les mots 
+            <i className='pi pi-cog ml-4 cursor-pointer hover:text-primary' onClick={() => setOptionsMenuVisible(!optionsMenuVisible)} />
+        </h2>
+        {optionsMenuVisible && (<div className='w-11 text-center text-bluegray-200 m-auto'>
             <InputNumber 
                 value={maxWordsCount} 
                 min={1} max={10} 
@@ -40,7 +44,7 @@ export const GuessWordsWithLetters = () => {
                 buttonLayout='horizontal'
                 onValueChange={e => setMaxWordLength(e.value ?? 3)}
             /> lettres
-        </div>
+        </div>)}
         <Divider />
         <div className='flex flex-wrap gap-5 row-gap-4 justify-content-center'>
             {wordsToGuess.map( (w, i) => {
