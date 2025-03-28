@@ -3,7 +3,11 @@ import { $words, Word } from "./words";
 
 export const reset = createEvent();
 
+export const $wordsFound = createStore<string[]>([]);
+export const $wordsRemaining = createStore<Word[]>([]);
 export const $wordsToGuess = createStore<Word[]>([]);
+export const $trials = createStore<number>(0);
+
 export const $maxWordsCount = createStore<number>(5);
 export const $maxWordLength = createStore<number>(5);
 export const setMaxWordsCount = createEvent<number>();
@@ -43,7 +47,7 @@ export const generateWordsFx = attach({
         const longestWordFrequency = getFrequencyObj(longestWord.key);
 
         const possibleWords = words.filter(w => {
-            if (w.key === longestWord.key) return true;
+            if (w.key === longestWord.key) return false;
             const freq = getFrequencyObj(w.key);
             return Object.keys(freq).every(c => freq[c] <= (longestWordFrequency[c] || 0));
         });
@@ -70,9 +74,33 @@ export const generateWordsFx = attach({
     })
 });
 $wordsToGuess.on(generateWordsFx.doneData, (_, state) => state.map( w => ({ ...w, key: w.key.toUpperCase() })));
+
 $letters
     .on(reshuffleLetters, (state) => shuffleArray(state))
     .on(generateWordsFx.doneData, (_, state) => shuffleArray(state[state.length-1].key.toUpperCase().split('')));
+
+export const findWordFx = attach({
+    source: { wordsRemaining: $wordsRemaining },
+    mapParams: (params: string, states) => {
+        return { word: params, ...states }; 
+    },
+    effect: createEffect(({ word, wordsRemaining }: { word: string, wordsRemaining: Word[] }) => {
+        return wordsRemaining.find(w => w.key === word);
+    })
+});
+
+$trials
+    .on(reset, () => 0)
+    .on(findWordFx.doneData, (trials, word) => word ? 0 : (trials === 5 ? 1 : trials + 1 ));
+
+$wordsFound
+    .on(reset, () => [])
+    .on(findWordFx.doneData, (words, word) => word ? [...words, word.key] : words );
+
+$wordsRemaining
+    .on(reset, () => [])
+    .on($wordsToGuess.updates, (_, state) => state)
+    .on(findWordFx.doneData, (words, word) => word ? words.filter(w => w.key !== word.key) : words);
 
 sample({
     clock: reset,
