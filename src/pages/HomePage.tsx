@@ -6,7 +6,7 @@ import { GuessWordsWithLetters } from '../components/GuessWordsWithLetters';
 export const HomePage = () => {
     return (
         <div className='flex flex-column h-full'>
-            <h1 className='text-primary text-center'>NsWords</h1>
+            <h1 className='text-primary text-center mb-0 mt-2'>NsWords</h1>
             <TabView className='flex-1 flex flex-column overflow-hidden'>
                 <TabPanel header="Mots mélées">
                     <GuessWordsWithLetters />

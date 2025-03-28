@@ -19,7 +19,7 @@ export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordCompl
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const [selectedLetters, setSelectedLetters] = useState<string[]>([]);
 	const [letterPositions, setLetterPositions] = useState<Letter[]>([]);
-	const activeLetters = useRef<Set<string>>(new Set());
+	const activeLettersIndexes = useRef<Set<number>>(new Set());
 
 	const resizeCanvas = () => {
 		const canvas = canvasRef.current;
@@ -35,42 +35,24 @@ export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordCompl
 		const maxLetters = letters.length;
 		const positions: Letter[] = [];
 
-		if (maxLetters <= 10) {
-			const centerX = canvasWidth / 2;
-			const centerY = canvasHeight / 2;
-			const radius = Math.min(canvasWidth, canvasHeight) / 3;
-			const adjustedRadius = radius + maxLetters * 3;
+		const centerX = canvasWidth / 2;
+		const centerY = canvasHeight / 2;
+		const radius = Math.min(canvasWidth, canvasHeight) / 3;
+		const adjustedRadius = radius + maxLetters * 1;
 
-			letters.forEach((char, index) => {
-				const angle = (index / maxLetters) * 2 * Math.PI;
-				const offsetX = adjustedRadius * Math.cos(angle);
-				const offsetY = adjustedRadius * Math.sin(angle);
+		letters.forEach((char, index) => {
+			const angle = (index / maxLetters) * 2 * Math.PI;
+			const offsetX = adjustedRadius * Math.cos(angle);
+			const offsetY = adjustedRadius * Math.sin(angle);
 
-				positions.push({
-					char,
-					x: centerX + offsetX,
-					y: centerY + offsetY,
-					width: 40,
-					height: 40,
-				});
+			positions.push({
+				char,
+				x: centerX + offsetX,
+				y: centerY + offsetY,
+				width: 40,
+				height: 40,
 			});
-		} else {
-			const cols = Math.ceil(Math.sqrt(maxLetters));
-			const spacingX = canvasWidth / cols;
-			const spacingY = canvasHeight / cols;
-	
-			letters.forEach((char, index) => {
-				const col = index % cols;
-				const row = Math.floor(index / cols);
-				positions.push({
-					char,
-					x: col * spacingX + spacingX / 2,
-					y: row * spacingY + spacingY / 2,
-					width: 40,
-					height: 40,
-				});
-			});
-		}
+		});	
 
 		setLetterPositions(positions);
 	};
@@ -87,6 +69,8 @@ export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordCompl
 	const handleDraw = (event: React.MouseEvent | React.TouchEvent): void => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
+
+		event.preventDefault();
 
 		const ctx = canvas.getContext("2d");
 		if (!ctx) return;
@@ -106,7 +90,7 @@ export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordCompl
 		ctx.arc(x, y, 5, 0, 2 * Math.PI);
 		ctx.fill();
 
-		letterPositions.forEach((letter) => {
+		letterPositions.forEach((letter, index) => {
 			const inBounds =
 			x > letter.x - letter.width / 2 &&
 			x < letter.x + letter.width / 2 &&
@@ -114,13 +98,11 @@ export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordCompl
 			y < letter.y + letter.height / 2;
 
 			if (inBounds) {
-				if (!activeLetters.current.has(letter.char)) {
+				if (!activeLettersIndexes.current.has(index)) {
 					setSelectedLetters((prev) => [...prev, letter.char]);
 					onLetterSelected([...selectedLetters, letter.char].join(''))
-					activeLetters.current.add(letter.char);
+					activeLettersIndexes.current.add(index);
 				}
-			} else {
-				activeLetters.current.delete(letter.char);
 			}
 		});
 	};
@@ -139,7 +121,7 @@ export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordCompl
 		onWordComplete(word);
 
 		setSelectedLetters([]);
-		activeLetters.current.clear();
+		activeLettersIndexes.current.clear();
 	};
 
 	const drawLetters = (): void => {
@@ -186,6 +168,27 @@ export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordCompl
 			}
 		}
 	}, [letterPositions]);
+
+	useEffect(() => {
+		const canvas = canvasRef.current;
+		if (canvas) {
+			const disableTouchScroll = (event: TouchEvent) => {
+				event.preventDefault();
+			};
+
+			// Attach touch listeners
+			canvas.addEventListener("touchstart", disableTouchScroll, { passive: false });
+			canvas.addEventListener("touchmove", disableTouchScroll, { passive: false });
+			canvas.addEventListener("touchend", disableTouchScroll, { passive: false });
+
+			return () => {
+				// Cleanup listeners
+				canvas.removeEventListener("touchstart", disableTouchScroll);
+				canvas.removeEventListener("touchmove", disableTouchScroll);
+				canvas.removeEventListener("touchend", disableTouchScroll);
+			};
+		}
+	}, []);
 
 	return (
 	<div ref={containerRef} style={{ width: "100%", height: "100%", position: "relative" }}>

@@ -24,6 +24,14 @@ export const shuffleArray = (array?: string[]): string[] | undefined => {
     return shuffledArray;
 };
 
+const getFrequencyObj = (str: string) => {
+    const freq: {[key: string]: number} = {};
+    for (const char of str) {
+        freq[char] = (freq[char] || 0) + 1;
+    }
+    return freq;
+}
+
 export const generateWordsFx = attach({
     source: { words: $words, maxWordsCount: $maxWordsCount, maxWordLength: $maxWordLength },
     effect: createEffect(({ words, maxWordsCount, maxWordLength }: { words: Word[], maxWordsCount: number, maxWordLength: number }) => {
@@ -32,9 +40,15 @@ export const generateWordsFx = attach({
 
         const wordIndex = Math.floor(Math.random() * longestWords.length);
         const longestWord = longestWords[wordIndex];
-        const possibleWords = words.filter(w => w.key !== longestWord.key && w.key.split('').every( l => longestWord.key.includes(l) ));
+        const longestWordFrequency = getFrequencyObj(longestWord.key);
 
-        if ( possibleWords.length === maxWordsCount - 1 ) {
+        const possibleWords = words.filter(w => {
+            if (w.key === longestWord.key) return true;
+            const freq = getFrequencyObj(w.key);
+            return Object.keys(freq).every(c => freq[c] <= (longestWordFrequency[c] || 0));
+        });
+
+        if ( possibleWords.length <= maxWordsCount - 1 ) {
             return [...possibleWords, longestWord];
         }
 
@@ -55,10 +69,10 @@ export const generateWordsFx = attach({
         return [...selectedWords, longestWord];
     })
 });
-$wordsToGuess.on(generateWordsFx.doneData, (_, state) => state);
+$wordsToGuess.on(generateWordsFx.doneData, (_, state) => state.map( w => ({ ...w, key: w.key.toUpperCase() })));
 $letters
     .on(reshuffleLetters, (state) => shuffleArray(state))
-    .on(generateWordsFx.doneData, (_, state) => shuffleArray(state[state.length-1].key.split('')));
+    .on(generateWordsFx.doneData, (_, state) => shuffleArray(state[state.length-1].key.toUpperCase().split('')));
 
 sample({
     clock: reset,

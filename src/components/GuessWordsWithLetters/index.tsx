@@ -38,19 +38,19 @@ export const GuessWordsWithLetters = () => {
             /> lettres
         </div>
         <Divider />
-        <div>
-            {wordsToGuess.map( (w, i) => (<div key={i} className='flex gap-2 mt-3'>
+        <div className='flex flex-wrap gap-5 row-gap-4 justify-content-center'>
+            {wordsToGuess.map( (w, i) => (<div key={i} className='lettersContainer'>
                 {w.key.split('').map( (l, k) => (<div key={k} className='letterBox'></div>))}
             </div>))}
         </div>
-        <Divider />
-        <div className='mt-2 text-center'>
-            {!!wordsToGuess.length && (<div className='text-right'><i className='pi pi-refresh' onClick={() => reshuffleLetters()} /></div>)}
+        <div className='h-2rem mt-3 text-center text-primary' style={{ letterSpacing: '5px' }}>{selectedWord}</div>
+        <Divider className='mt-1' />
+        <div className='mt-2 text-center relative h-15rem'>
+            {!!wordsToGuess.length && (<div className='text-right absolute top-0 right-0'><i className='pi pi-refresh' onClick={() => reshuffleLetters()} /></div>)}
             <LetterCanvas letters={letters} onWordComplete={word => onWordComplete(word)} onLetterSelected={w => setSelectedWord(w)} />
-            {selectedWord && (<div className='mt-3'>{selectedWord}</div>)}
         </div>
         <Divider />
-        <div className='mt-2 text-center'>
+        <div className='mt-6 text-center'>
             <Button severity='info' onClick={() => reset()}><i className='pi pi-refresh' /><span className='ml-2 font-bold'>Nouvelle partie</span></Button>
         </div>
     </div>

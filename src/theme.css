@@ -58,6 +58,12 @@ tr.row-even {
     width: 1.5rem;
 }
 
+.lettersContainer {
+    display: flex; 
+    gap: 0.5rem;
+    background-color: #1e23cd26;
+}
+
 .letterBox {
     border: thin #7c96d1 solid;
     padding: 0.25rem;
