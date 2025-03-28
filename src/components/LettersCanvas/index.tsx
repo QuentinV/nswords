@@ -85,9 +85,9 @@ export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordCompl
 			? event.touches[0].clientY - rect.top
 			: (event as React.MouseEvent).clientY - rect.top;
 
-		ctx.fillStyle = "blue";
+		ctx.fillStyle = "#ababab6b";
 		ctx.beginPath();
-		ctx.arc(x, y, 5, 0, 2 * Math.PI);
+		ctx.arc(x, y, 10, 0, 2 * Math.PI);
 		ctx.fill();
 
 		letterPositions.forEach((letter, index) => {

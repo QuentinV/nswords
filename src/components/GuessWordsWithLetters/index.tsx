@@ -46,7 +46,7 @@ export const GuessWordsWithLetters = () => {
         <div className='h-2rem mt-3 text-center text-primary' style={{ letterSpacing: '5px' }}>{selectedWord}</div>
         <Divider className='mt-1' />
         <div className='mt-2 text-center relative h-15rem'>
-            {!!wordsToGuess.length && (<div className='text-right absolute top-0 right-0'><i className='pi pi-refresh' onClick={() => reshuffleLetters()} /></div>)}
+            {!!wordsToGuess.length && (<div className='text-right absolute top-0 right-0 z-5'><i className='pi pi-refresh' onClick={() => reshuffleLetters()} /></div>)}
             <LetterCanvas letters={letters} onWordComplete={word => onWordComplete(word)} onLetterSelected={w => setSelectedWord(w)} />
         </div>
         <Divider />
