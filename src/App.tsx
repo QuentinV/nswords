@@ -5,11 +5,9 @@ import 'primeicons/primeicons.css'
 import './theme.css';
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage';
-import { DbInit } from './components/DbInit';
 
 function App() {
     return (<>
-    <DbInit />
     <HashRouter>
         <Routes>
             <Route

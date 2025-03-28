@@ -1,5 +1,3 @@
-const stores = ['words'];
-
 export const openDb = (): Promise<IDBDatabase> => 
     new Promise((resolve, reject) => {
         const request = indexedDB.open('NsWords', 1);
@@ -9,11 +7,6 @@ export const openDb = (): Promise<IDBDatabase> =>
             if (!db.objectStoreNames.contains('default')) {
                 db.createObjectStore('default', { keyPath: 'id', autoIncrement: false });
             }
-            stores.forEach(store => {
-                if (!db.objectStoreNames.contains(store)) {
-                    db.createObjectStore(store, { keyPath: 'id', autoIncrement: true });
-                }
-            });
         };
   
         request.onsuccess = () => resolve(request.result);    

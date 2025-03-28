@@ -1,4 +1,5 @@
-import { createEvent, createStore } from 'effector'
+import { createEffect, createEvent, createStore } from 'effector'
+import { execQuery } from '../api/db';
 
 export interface Word {
     key: string;
@@ -6,6 +7,21 @@ export interface Word {
 }
 
 export const $words = createStore<Word[]>([]);
-export const initWords = createEvent<Word[]>();
 
-$words.on(initWords, (_, state) => state);
+const initWordsFx = createEffect(async () => {
+    console.log('loading words...')
+    const item: { words: {[key: string]: Word[]} } = await execQuery('default', (s: IDBObjectStore) => s.get(1)); 
+    let ws: Word[];  
+    if ( item ) {
+        ws = [];
+        Object.keys(item.words).forEach(k => item.words[k].forEach( w => ws.push(w)));        
+    } else {
+        ws = await (await fetch(`${process.env.PUBLIC_URL}/lexics/words_fr.json`)).json();
+        await execQuery('default', (s: IDBObjectStore) => s.put({ id: 1, words: ws }), 'readwrite');
+    }
+    return ws;
+});
+
+$words.on(initWordsFx.doneData, (_, state) => state);
+
+initWordsFx();
