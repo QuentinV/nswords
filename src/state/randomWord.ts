@@ -1,7 +1,25 @@
 import { createEffect, createStore, attach, createEvent, sample } from "effector";
 import { $words, Word } from "./words";
 
+const loadFromLocalStorageFx = createEffect(() => JSON.parse(localStorage.getItem('randomWordData') ?? '{}'));
+
+export const reset = createEvent();
 export const $randomWord = createStore<Word|null>(null);
+export const $triesCount = createStore<number>(0);
+export const setTriesCount = createEvent<number>();
+export const $win = createStore<boolean>(false);
+export const setWin = createEvent<boolean>();
+export const $maxTries = createStore<number>(5);
+export const setMaxTries = createEvent<number>();
+
+interface Letter {
+    valid?: 'yes' | 'no' | 'present';
+    value: string;
+}
+
+type ValueType = { letters: Letter[][] };
+export const $value = createStore<ValueType>({ letters: [] });
+export const setValue = createEvent<ValueType>();
 
 export const generateRandomWordFx = attach({
     source: $words,
@@ -14,42 +32,6 @@ export const generateRandomWordFx = attach({
         }
     })
 });
-
-const setRandomWord = createEvent<Word|null>();
-$randomWord.on(generateRandomWordFx.doneData, (_, state) => state).on(setRandomWord, (_, state) => state);
-
-export const $triesCount = createStore<number>(0);
-export const setTriesCount = createEvent<number>();
-$triesCount.on(setTriesCount, (_, state) => state);
-
-export const $win = createStore<boolean>(false);
-export const setWin = createEvent<boolean>();
-$win.on(setWin, (_, state) => state);
-
-export const $maxTries = createStore<number>(5);
-export const setMaxTries = createEvent<number>();
-$maxTries.on(setMaxTries, (_, state) => state);
-
-interface Letter {
-    valid?: 'yes' | 'no' | 'present';
-    value: string;
-}
-
-type ValueType = { letters: Letter[][] };
-export const $value = createStore<ValueType>({ letters: [] });
-export const setValue = createEvent<ValueType>();
-$value.on(setValue, (_, state) => state);
-
-export const reset = createEvent();
-sample({
-    clock: reset,
-    target: createEffect(() => {
-        setWin(false);
-        setTriesCount(0);
-        setValue({ letters: [] });
-        generateRandomWordFx();
-    })
-})
 
 export const guessFx = attach({
     source: { randomWord: $randomWord, value: $value, triesCount: $triesCount },
@@ -70,25 +52,39 @@ export const guessFx = attach({
     })
 });
 
-const loadFromLocalStorageFx = createEffect(() => {
-    const data = JSON.parse(localStorage.getItem('randomWordData') ?? '{}');
-    data?.$randomWord && setRandomWord(data.$randomWord);
-    data?.$triesCount && setTriesCount(data.$triesCount);
-    data?.$win && setWin(data.$win);
-    data?.$maxTries && setMaxTries(data.$maxTries);
-    data?.$value && setValue(data.$value);
-});
+$randomWord
+    .on(generateRandomWordFx.doneData, (_, state) => state)
+    .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$randomWord ?? null);
 
-const saveToLocalStorageFx = attach({
-    source: { $randomWord, $triesCount, $win, $maxTries, $value },
-    effect: createEffect((data: any) => {
-        localStorage.setItem('randomWordData', JSON.stringify(data));
-    })
-});
+$triesCount
+    .on(setTriesCount, (_, state) => state)
+    .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$triesCount ?? 0);
+
+$win
+    .on(setWin, (_, state) => state)
+    .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$win ?? false);
+
+$maxTries
+    .on(setMaxTries, (_, state) => state)
+    .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$maxTries ?? 5);
+
+$value
+    .on(setValue, (_, state) => state)
+    .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$value ?? { letters: [] });
 
 sample({
-    source: [ $randomWord, $triesCount, $win, $maxTries, $value ],
-    target: saveToLocalStorageFx
+    clock: reset,
+    target: createEffect(() => {
+        setWin(false);
+        setTriesCount(0);
+        setValue({ letters: [] });
+        generateRandomWordFx();
+    })
+})
+
+sample({
+    source: { $randomWord, $triesCount, $win, $maxTries, $value },
+    target: createEffect((data: any) => localStorage.setItem('randomWordData', JSON.stringify(data)))
 });
 
 loadFromLocalStorageFx();
