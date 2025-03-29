@@ -3,21 +3,25 @@ import 'primereact/resources/themes/lara-dark-amber/theme.css';
 import 'primeflex/primeflex.css'
 import 'primeicons/primeicons.css'
 import './theme.css';
-import { HashRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage';
 
 function App() {
     return (<>
-    <HashRouter>
+    <BrowserRouter>
         <Routes>
             <Route
-                index
+                path='/nswords/games'
                 element={
                     <HomePage />
                 }
             />
+            <Route
+                path='/nswords'
+                element={<Navigate to={'/nswords/games'} />}
+            />
         </Routes>
-    </HashRouter>
+    </BrowserRouter>
     </>)
 }
 

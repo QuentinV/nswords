@@ -1,4 +1,4 @@
-import { createEffect, createEvent, createStore } from 'effector'
+import { createEffect, createStore } from 'effector'
 import { execQuery } from '../api/db';
 
 export interface Word {
