@@ -90,14 +90,15 @@ export const findWordFx = attach({
 });
 
 export const addLetterHelp = attach({
-    source: { wordsRemaining: $wordsRemaining, lettersHelp: $lettersHelp },
-    effect: createEffect(({ wordsRemaining, lettersHelp }: { wordsRemaining: Word[], lettersHelp: string[][] }) => {
-        for ( let i = 0; i < wordsRemaining.length; ++i ) {
-            const missingChars = wordsRemaining[i].key.split('').map( (char, index) => ({ char, index }) ).filter( letter => !lettersHelp[i]?.[letter.index] );
+    source: { wordsToGuess: $wordsToGuess, wordsRemaining: $wordsRemaining, lettersHelp: $lettersHelp },
+    effect: createEffect(({ wordsToGuess, wordsRemaining, lettersHelp }: { wordsToGuess: Word[], wordsRemaining: Word[], lettersHelp: string[][] }) => {
+        const words = wordsToGuess.map( (w, index) => ({...w, index })).filter( w => wordsRemaining.some( wr => w.key === wr.key ) );
+        for ( let i = 0; i < words.length; ++i ) {
+            const missingChars = words[i].key.split('').map( (char, index) => ({ char, index }) ).filter( letter => !lettersHelp[words[i].index]?.[letter.index] );       
             if ( missingChars.length > 1 ) {
                 const random = Math.round(Math.random() * (missingChars.length - 1));
                 const selected = missingChars[random];
-                return { index: i, letterIndex: selected.index, char: selected.char };
+                return { index: words[i].index, letterIndex: selected.index, char: selected.char };
             }
         }
     })
