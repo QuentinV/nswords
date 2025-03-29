@@ -1,9 +1,10 @@
 import { useUnit } from 'effector-react';
 import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
 import { InputNumber } from 'primereact/inputnumber';
 import React, { useState } from 'react';
 import { Divider } from 'primereact/divider';
-import { reset, $wordsToGuess, $wordsFound, $wordsRemaining, $maxWordsCount, $maxWordLength, setMaxWordsCount, setMaxWordLength, reshuffleLetters, $letters, $trials, findWordFx } from '../../state/wordsFromLetters';
+import { reset, $wordsToGuess, $wordsFound, $wordsRemaining, $maxWordsCount, $maxWordLength, setMaxWordsCount, setMaxWordLength, reshuffleLetters, $letters, $trials, findWordFx, setTrials } from '../../state/wordsFromLetters';
 import { LetterCanvas } from '../LettersCanvas';
 import { LettersButton } from '../LettersButton';
 
@@ -17,12 +18,17 @@ export const GuessWordsWithLetters = () => {
     const trials = useUnit($trials);
     const [selectedWord, setSelectedWord] = useState<string|null>();
     const [optionsMenuVisible, setOptionsMenuVisible] = useState<boolean>(false);
+    const [helpDefinition, setHelpDefinition] = useState<string|null>(null);
     const isMobile = ('ontouchstart' in document.documentElement);
     const buttonsMode = !isMobile || letters.length >= 7;
 
     const onWordComplete = (word: string) => {
         setSelectedWord(null);
         findWordFx(word);
+    }
+
+    const needHelp = () => {
+        setHelpDefinition(wordsRemaining[Math.round(Math.random() * wordsRemaining.length)]?.definition ?? null);
     }
 
     return (
@@ -66,7 +72,7 @@ export const GuessWordsWithLetters = () => {
             )}
             {!!selectedWord && selectedWord}
             {!selectedWord && (trials >= 5 ? 
-                (<a className='cursor-pointer hover:text-purple-500'>Besoin d&apos;aide ?</a>) : (trials >= 4 ? 
+                (<a className='cursor-pointer hover:text-purple-500' onClick={() => needHelp()}>Besoin d&apos;aide ?</a>) : (trials >= 4 ? 
                     (<span className='text-red-500'>Ne pas perdre espoir</span>)
                 : (trials >= 3 ? 
                     (<span className='text-red-300'>Presque, ou pas</span>) 
@@ -82,6 +88,15 @@ export const GuessWordsWithLetters = () => {
         <div className='mt-6 text-center'>
             <Button severity='info' onClick={() => reset()}><i className='pi pi-refresh' /><span className='ml-2 font-bold'>Nouvelle partie</span></Button>
         </div>
+        <Dialog header='Definitions' visible={helpDefinition !== null} onHide={() => { setHelpDefinition(null); setTrials(0); }} dismissableMask={true}>
+            {helpDefinition !== null && (
+                <div className={helpDefinition?.trim() ? 'text-primary' : 'text-red-500'}>
+                    {helpDefinition?.trim() 
+                    ? helpDefinition 
+                    : 'Désolé pas de définitions de disponible. Peut être la prochaine fois.'}
+                </div>
+            )}
+        </Dialog>
     </div>
     );
 }

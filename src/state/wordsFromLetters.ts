@@ -8,6 +8,7 @@ export const $wordsFound = createStore<string[]>([]);
 export const $wordsRemaining = createStore<Word[]>([]);
 export const $wordsToGuess = createStore<Word[]>([]);
 export const $trials = createStore<number>(0);
+export const setTrials = createEvent<number>();
 
 export const $maxWordsCount = createStore<number>(5);
 export const $maxWordLength = createStore<number>(5);
@@ -103,7 +104,8 @@ $wordsToGuess
 $trials
     .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$trials ?? 0)
     .on(reset, () => 0)
-    .on(findWordFx.doneData, (trials, word) => word ? 0 : (trials === 5 ? 1 : trials + 1 ));
+    .on(findWordFx.doneData, (trials, word) => word ? 0 : (trials === 5 ? 1 : trials + 1 ))
+    .on(setTrials, (_, state) => state);
 
 $wordsFound
     .on(loadFromLocalStorageFx.doneData, (_, data: any) => data?.$wordsFound ?? [])
