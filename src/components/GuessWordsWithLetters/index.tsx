@@ -69,14 +69,14 @@ export const GuessWordsWithLetters = () => {
                 </div>)
             })}
         </div>
-        <div className='h-2rem mt-5 mb-2 text-center text-primary' style={{ letterSpacing: '5px' }}>
+        <div className='h-2rem mt-5 mb-2 text-center text-primary'>
             {!!wordsToGuess.length && !wordsRemaining.length && (
                 <h3 className='text-primary'>
                     <i className='pi pi-face-smile text-primary mr-3' /> 
                     Bravo c&apos;est gagné !
                 </h3>
             )}
-            {!!selectedWord && selectedWord}
+            {!!selectedWord && (<span style={{ letterSpacing: '5px' }}>{selectedWord}</span>)}
             {!selectedWord && (
                 trials === 5 ? (<a className='cursor-pointer text-red-500' onClick={() => addLetterHelp()}>Besoin d&apos;une lettre ?</a>)
                 : trials === 4 ? (<a className='cursor-pointer text-red-400' onClick={() => needHelp()}>Besoin d&apos;aide ?</a>) 
