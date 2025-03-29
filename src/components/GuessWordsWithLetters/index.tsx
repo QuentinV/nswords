@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { Divider } from 'primereact/divider';
 import { reset, $wordsToGuess, $wordsFound, $wordsRemaining, $maxWordsCount, $maxWordLength, setMaxWordsCount, setMaxWordLength, reshuffleLetters, $letters, $trials, findWordFx } from '../../state/wordsFromLetters';
 import { LetterCanvas } from '../LettersCanvas';
+import { LettersButton } from '../LettersButton';
 
 export const GuessWordsWithLetters = () => {
     const wordsToGuess = useUnit($wordsToGuess);
@@ -17,6 +18,7 @@ export const GuessWordsWithLetters = () => {
     const [selectedWord, setSelectedWord] = useState<string|null>();
     const [optionsMenuVisible, setOptionsMenuVisible] = useState<boolean>(false);
     const isMobile = ('ontouchstart' in document.documentElement);
+    const buttonsMode = !isMobile || letters.length >= 7;
 
     const onWordComplete = (word: string) => {
         setSelectedWord(null);
@@ -71,17 +73,10 @@ export const GuessWordsWithLetters = () => {
                 : (trials >= 2 && (<span className='text-red-200'>Raté</span>)))))}
         </div>
         <Divider className='mt-1' />
-        {!!wordsRemaining.length && (<div className='mt-2 text-center relative h-15rem'>
+        {!!wordsRemaining.length && (<div className={`mt-2 text-center relative ${!buttonsMode && 'h-15rem'}`}>
             {!!wordsToGuess.length && (<div className='text-right absolute top-0 z-5' style={{ right: '-15px'}}><i className='pi pi-refresh' onClick={() => reshuffleLetters()} /></div>)}
-            {isMobile && letters.length < 7 && <LetterCanvas letters={letters} onWordComplete={word => onWordComplete(word)} onLetterSelected={l => setSelectedWord((selectedWord ?? '') + l)} />}
-            {(!isMobile || letters.length >= 7) && (<>                
-                <div className='flex gap-5 flex-wrap justify-content-center'>
-                    {letters.map((l, i) => (
-                        <Button key={i} onClick={() => setSelectedWord((selectedWord ?? '') + l)}>{l}</Button>
-                    ))}
-                </div>     
-                <Button className='mt-5' severity='success' onClick={() => onWordComplete(selectedWord ?? '')}>Deviner</Button>           
-            </>) }
+            {!buttonsMode && <LetterCanvas letters={letters} onWordComplete={word => onWordComplete(word)} onLetterSelected={l => setSelectedWord((selectedWord ?? '') + l)} />}
+            {buttonsMode && (<LettersButton letters={letters} onWordComplete={word => onWordComplete(word)} onLetterSelected={l => setSelectedWord((selectedWord ?? '') + l)} />) }
         </div>)}
         <Divider />
         <div className='mt-6 text-center'>

@@ -18,6 +18,7 @@ const initWordsFx = createEffect(async () => {
     } else {
         ws = await (await fetch(`${process.env.PUBLIC_URL}/lexics/words_fr.json`)).json();
         await execQuery('default', (s: IDBObjectStore) => s.put({ id: 1, words: ws }), 'readwrite');
+        document.location.reload();
     }
     return ws;
 });
