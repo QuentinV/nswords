@@ -17,7 +17,6 @@ self.addEventListener('activate', (event) => {
 })
 
 self.addEventListener('fetch', (event) => { 
-    console.log('Fetching:', event.request.url);
     if (event.request.url.startsWith('chrome-extension://')) {
         event.respondWith(
             fetch(event.request).catch(() => caches.match(event.request))
@@ -29,7 +28,6 @@ self.addEventListener('fetch', (event) => {
         caches.open(CACHE_NAME).then((cache) => 
             fetch(event.request)
                 .then((response) => {
-                    console.log('caching', event.request)
                     cache.put(event.request, response.clone());
                     return response;
                 })
