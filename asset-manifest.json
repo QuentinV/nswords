@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/nswords/static/css/main.28c85785.css",
-    "main.js": "/nswords/static/js/main.2d14c84f.js",
+    "main.js": "/nswords/static/js/main.3fdd4c00.js",
     "static/js/453.d30b2450.chunk.js": "/nswords/static/js/453.d30b2450.chunk.js",
     "static/media/InterVariable-Italic.woff2": "/nswords/static/media/InterVariable-Italic.e295f70fe3e2df296c7b.woff2",
     "static/media/InterVariable.woff2": "/nswords/static/media/InterVariable.a0e477f2f1f9d2376fde.woff2",
@@ -12,11 +12,11 @@
     "static/media/primeicons.woff2": "/nswords/static/media/primeicons.024b32cc7bf399b1a847.woff2",
     "index.html": "/nswords/index.html",
     "main.28c85785.css.map": "/nswords/static/css/main.28c85785.css.map",
-    "main.2d14c84f.js.map": "/nswords/static/js/main.2d14c84f.js.map",
+    "main.3fdd4c00.js.map": "/nswords/static/js/main.3fdd4c00.js.map",
     "453.d30b2450.chunk.js.map": "/nswords/static/js/453.d30b2450.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.28c85785.css",
-    "static/js/main.2d14c84f.js"
+    "static/js/main.3fdd4c00.js"
   ]
 }
