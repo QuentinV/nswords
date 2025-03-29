@@ -11,7 +11,7 @@ interface Letter {
 interface LetterCanvasProps {
 	letters: string[];
 	onWordComplete: (word: string) => void;
-	onLetterSelected: (letters: string) => void;
+	onLetterSelected: (letter: string) => void;
 }
 
 export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordComplete, onLetterSelected }) => {
@@ -100,7 +100,7 @@ export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordCompl
 			if (inBounds) {
 				if (!activeLettersIndexes.current.has(index)) {
 					setSelectedLetters((prev) => [...prev, letter.char]);
-					onLetterSelected([...selectedLetters, letter.char].join(''))
+					onLetterSelected(letter.char)
 					activeLettersIndexes.current.add(index);
 				}
 			}
