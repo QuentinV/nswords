@@ -9,9 +9,11 @@ export const $wordsRemaining = createStore<Word[]>([]);
 export const $wordsToGuess = createStore<Word[]>([]);
 export const $trials = createStore<number>(0);
 export const setTrials = createEvent<number>();
+export const $buttonsMode = createStore<boolean>(false);
+export const setButtonsMode = createEvent<boolean>();
 
 export const $maxWordsCount = createStore<number>(5);
-export const $maxWordLength = createStore<number>(5);
+export const $maxWordLength = createStore<number>(6);
 export const setMaxWordsCount = createEvent<number>();
 export const setMaxWordLength = createEvent<number>();
 
@@ -90,7 +92,7 @@ $maxWordsCount
 
 $maxWordLength
     .on(setMaxWordLength, (_, state) => state)
-    .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$maxWordLength ?? 5);
+    .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$maxWordLength ?? 6);
 
 $letters
     .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$letters ?? [])
@@ -118,13 +120,17 @@ $wordsRemaining
     .on(findWordFx.doneData, (words, word) => word ? words.filter(w => w.key !== word.key) : words)
     .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$wordsRemaining ?? []);
 
+$buttonsMode
+    .on(setButtonsMode, (_, state) => state)
+    .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$buttonsMode ?? false );
+
 sample({
     clock: reset,
     target: generateWordsFx
 })
 
 sample({
-    source: { $maxWordsCount, $maxWordLength, $letters, $wordsToGuess, $trials, $wordsFound, $wordsRemaining },
+    source: { $maxWordsCount, $maxWordLength, $letters, $wordsToGuess, $trials, $wordsFound, $wordsRemaining, $buttonsMode },
     target: createEffect((data: any) => localStorage.setItem('guesswords', JSON.stringify(data)))
 })
 

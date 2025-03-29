@@ -4,7 +4,7 @@ import { Dialog } from 'primereact/dialog';
 import { InputNumber } from 'primereact/inputnumber';
 import React, { useState } from 'react';
 import { Divider } from 'primereact/divider';
-import { reset, $wordsToGuess, $wordsFound, $wordsRemaining, $maxWordsCount, $maxWordLength, setMaxWordsCount, setMaxWordLength, reshuffleLetters, $letters, $trials, findWordFx, setTrials } from '../../state/wordsFromLetters';
+import { reset, $wordsToGuess, $wordsFound, $wordsRemaining, $maxWordsCount, $maxWordLength, setMaxWordsCount, setMaxWordLength, reshuffleLetters, $letters, $trials, findWordFx, setTrials, $buttonsMode, setButtonsMode } from '../../state/wordsFromLetters';
 import { LetterCanvas } from '../LettersCanvas';
 import { LettersButton } from '../LettersButton';
 
@@ -20,7 +20,8 @@ export const GuessWordsWithLetters = () => {
     const [optionsMenuVisible, setOptionsMenuVisible] = useState<boolean>(false);
     const [helpDefinition, setHelpDefinition] = useState<string|null>(null);
     const isMobile = ('ontouchstart' in document.documentElement);
-    const buttonsMode = !isMobile || letters.length >= 7;
+    const forcedButtonsMode = !isMobile || letters.length >= 7;
+    const buttonsMode = useUnit($buttonsMode) || forcedButtonsMode;
 
     const onWordComplete = (word: string) => {
         setSelectedWord(null);
@@ -81,6 +82,7 @@ export const GuessWordsWithLetters = () => {
         <Divider className='mt-1' />
         {!!wordsRemaining.length && (<div className={`mt-2 text-center relative ${!buttonsMode && 'h-15rem'}`}>
             {!!wordsToGuess.length && (<div className='text-right absolute top-0 z-5' style={{ right: '-15px'}}><i className='pi pi-refresh' onClick={() => reshuffleLetters()} /></div>)}
+            {!forcedButtonsMode && !!wordsToGuess.length && (<div className='text-right absolute z-5' style={{ top: '30px', right: '-15px'}}><i className='pi pi-table' onClick={() => setButtonsMode(!buttonsMode)} /></div>)}
             {!buttonsMode && <LetterCanvas letters={letters} onWordComplete={word => onWordComplete(word)} onLetterSelected={l => setSelectedWord((selectedWord ?? '') + l)} />}
             {buttonsMode && (<LettersButton letters={letters} onWordComplete={word => onWordComplete(word)} onLetterSelected={l => setSelectedWord((selectedWord ?? '') + l)} />) }
         </div>)}
