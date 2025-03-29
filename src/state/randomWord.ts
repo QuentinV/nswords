@@ -35,7 +35,7 @@ export const generateRandomWordFx = attach({
         }
         setWordLengthConf(wordLengthConf);
         for(let word = null; !word; word = null) {
-            word = wordsList[Math.floor(Math.random() * wordsList.length)];
+            word = wordsList[Math.floor(Math.random() * (wordsList.length-1))];
             if ( word?.definition ) {
                 return { key: word.key.toUpperCase(), definition: word.definition };
             }

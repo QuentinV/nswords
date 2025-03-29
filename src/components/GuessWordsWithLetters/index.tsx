@@ -4,7 +4,7 @@ import { Dialog } from 'primereact/dialog';
 import { InputNumber } from 'primereact/inputnumber';
 import React, { useState } from 'react';
 import { Divider } from 'primereact/divider';
-import { reset, $wordsToGuess, $wordsFound, $wordsRemaining, $maxWordsCount, $maxWordLength, setMaxWordsCount, setMaxWordLength, reshuffleLetters, $letters, $trials, findWordFx, setTrials, $buttonsMode, setButtonsMode } from '../../state/wordsFromLetters';
+import { reset, $wordsToGuess, $wordsFound, $wordsRemaining, $maxWordsCount, $maxWordLength, setMaxWordsCount, setMaxWordLength, reshuffleLetters, $letters, $trials, findWordFx, setTrials, $buttonsMode, setButtonsMode, addLetterHelp, $lettersHelp } from '../../state/wordsFromLetters';
 import { LetterCanvas } from '../LettersCanvas';
 import { LettersButton } from '../LettersButton';
 
@@ -15,6 +15,7 @@ export const GuessWordsWithLetters = () => {
     const maxWordsCount = useUnit($maxWordsCount);
     const maxWordLength = useUnit($maxWordLength);
     const letters = useUnit($letters);
+    const lettersHelp = useUnit($lettersHelp);
     const trials = useUnit($trials);
     const [selectedWord, setSelectedWord] = useState<string|null>();
     const [optionsMenuVisible, setOptionsMenuVisible] = useState<boolean>(false);
@@ -28,8 +29,9 @@ export const GuessWordsWithLetters = () => {
         findWordFx(word);
     }
 
-    const needHelp = () => {
-        setHelpDefinition(wordsRemaining[Math.round(Math.random() * wordsRemaining.length)]?.definition ?? null);
+    const needHelp = (firstAvailable?: boolean) => {
+        const def = (firstAvailable ? wordsRemaining.find(w => !!w.definition)?.definition : wordsRemaining[Math.round(Math.random() * wordsRemaining.length)]?.definition) ?? null;
+        setHelpDefinition(def);
     }
 
     return (
@@ -56,11 +58,14 @@ export const GuessWordsWithLetters = () => {
             /> lettres
         </div>)}
         <Divider />
-        <div className='flex flex-wrap gap-5 row-gap-4 justify-content-center'>
+        <div className='flex flex-wrap gap-5 row-gap-4 justify-content-center relative'>
+            {!!wordsToGuess.length && (
+                <div className='text-right absolute z-5' style={{ top:'-10px', right: '-15px'}}><i className='pi pi-info-circle text-lg' onClick={() => needHelp(true)} /></div>
+            )}
             {wordsToGuess.map( (w, i) => {
                 const found = wordsFound.includes(w.key);
                 return (<div key={i} className={`lettersContainer ${found && 'box-ok'}`}>
-                    {w.key.split('').map( (l, k) => (<div key={k} className='letterBox'>{found && l}</div>))}
+                    {w.key.split('').map( (l, k) => (<div key={k} className='letterBox'>{(found || !!lettersHelp?.[i]?.[k]) && l}</div>))}
                 </div>)
             })}
         </div>
@@ -72,12 +77,13 @@ export const GuessWordsWithLetters = () => {
                 </h3>
             )}
             {!!selectedWord && selectedWord}
-            {!selectedWord && (trials >= 5 ? 
-                (<a className='cursor-pointer hover:text-purple-500' onClick={() => needHelp()}>Besoin d&apos;aide ?</a>) : (trials >= 4 ? 
-                    (<span className='text-red-500'>Ne pas perdre espoir</span>)
-                : (trials >= 3 ? 
-                    (<span className='text-red-300'>Presque, ou pas</span>) 
-                : (trials >= 2 && (<span className='text-red-200'>Raté</span>)))))}
+            {!selectedWord && (
+                trials === 5 ? (<a className='cursor-pointer text-red-500' onClick={() => addLetterHelp()}>Besoin d&apos;une lettre ?</a>)
+                : trials === 4 ? (<a className='cursor-pointer text-red-400' onClick={() => needHelp()}>Besoin d&apos;aide ?</a>) 
+                : trials === 3 ? (<span className='text-red-300'>Ne pas perdre espoir</span>)
+                : trials === 2 ? (<span className='text-red-200'>Presque, ou pas</span>) 
+                : trials === 1 && (<span className='text-red-100'>Raté</span>)
+            )}
         </div>
         <Divider className='mt-1' />
         {!!wordsRemaining.length && (<div className={`mt-2 text-center relative ${!buttonsMode && 'h-15rem'}`}>
