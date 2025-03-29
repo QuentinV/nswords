@@ -2,8 +2,9 @@ import { useUnit } from 'effector-react';
 import { Button } from 'primereact/button';
 import React, { useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
+import { InputNumber } from 'primereact/inputnumber';
 import { Divider } from 'primereact/divider';
-import { $maxTries, $randomWord, $triesCount, $value, $win, setValue, reset, guessFx } from '../../state/randomWord';
+import { $maxTries, $randomWord, $triesCount, $value, $win, setValue, reset, guessFx, $wordLengthConf, setWordLengthConf } from '../../state/randomWord';
 
 export const RandomWord = () => {
     const randomWord = useUnit($randomWord);
@@ -11,6 +12,7 @@ export const RandomWord = () => {
     const maxTries = useUnit($maxTries);
     const win = useUnit($win);
     const value = useUnit($value);
+    const wordLengthConf = useUnit($wordLengthConf);
     const refs = [...Array(30)].map( () => useRef(null) );
 
     const onChange = (row: number, col: number, letter: string, moveTo: number) => {
@@ -31,7 +33,16 @@ export const RandomWord = () => {
     return (
     <div className='flex flex-column align-items-center'>
         <h2 className='mt-1 text-bluegray-200'>Devine un mot</h2>
-        {!!randomWord && (<div className='font-italic text-sm'>{randomWord?.key.length} lettres</div>)}
+        <div className='flex align-items-center gap-2'>
+            <InputNumber 
+                value={wordLengthConf} 
+                min={3} max={25} 
+                allowEmpty={false} 
+                showButtons
+                buttonLayout='horizontal'
+                onValueChange={e => setWordLengthConf(e.value ?? 3)}
+            /> lettres
+        </div>
         {randomWord && (<div className='w-full'>
             <div>
                 <Divider className='col-8 m-auto mb-2' />

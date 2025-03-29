@@ -5,12 +5,14 @@ const loadFromLocalStorageFx = createEffect(() => JSON.parse(localStorage.getIte
 
 export const reset = createEvent();
 export const $randomWord = createStore<Word|null>(null);
+export const $wordLengthConf = createStore<number>(7);
 export const $triesCount = createStore<number>(0);
 export const setTriesCount = createEvent<number>();
 export const $win = createStore<boolean>(false);
 export const setWin = createEvent<boolean>();
 export const $maxTries = createStore<number>(5);
 export const setMaxTries = createEvent<number>();
+export const setWordLengthConf = createEvent<number>();
 
 interface Letter {
     valid?: 'yes' | 'no' | 'present';
@@ -22,10 +24,18 @@ export const $value = createStore<ValueType>({ letters: [] });
 export const setValue = createEvent<ValueType>();
 
 export const generateRandomWordFx = attach({
-    source: $words,
-    effect: createEffect((words: Word[]) => {
+    source: { words: $words, wordLengthConf: $wordLengthConf },
+    effect: createEffect(({ words, wordLengthConf } : { words: Word[], wordLengthConf: number }) => {
+        let wordsList: Word[] = [];
+        for (; !wordsList?.length && wordLengthConf >= 3;) {
+            wordsList = words.filter( w => w.key.length === wordLengthConf);
+            if ( !wordsList.length ) {  
+                wordLengthConf--;
+            }
+        }
+        setWordLengthConf(wordLengthConf);
         for(let word = null; !word; word = null) {
-            word = words[Math.floor(Math.random() * words.length)];
+            word = wordsList[Math.floor(Math.random() * wordsList.length)];
             if ( word?.definition ) {
                 return { key: word.key.toUpperCase(), definition: word.definition };
             }
@@ -72,6 +82,10 @@ $value
     .on(setValue, (_, state) => state)
     .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$value ?? { letters: [] });
 
+$wordLengthConf
+    .on(loadFromLocalStorageFx.doneData, (_, data: any) => data.$wordLengthConf ?? 7)
+    .on(setWordLengthConf, (_, state) => state);
+
 sample({
     clock: reset,
     target: createEffect(() => {
@@ -83,7 +97,7 @@ sample({
 })
 
 sample({
-    source: { $randomWord, $triesCount, $win, $maxTries, $value },
+    source: { $randomWord, $triesCount, $win, $maxTries, $value, $wordLengthConf },
     target: createEffect((data: any) => localStorage.setItem('randomWordData', JSON.stringify(data)))
 });
 
