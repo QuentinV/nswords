@@ -1,7 +1,7 @@
 import { createEffect, createStore } from 'effector'
 import { execQuery } from '../api/db';
 
-const version = '1.0.1';
+const version = '1.0.2';
 
 export interface Word {
     key: string;
