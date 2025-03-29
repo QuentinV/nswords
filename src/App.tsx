@@ -3,7 +3,7 @@ import 'primereact/resources/themes/lara-dark-amber/theme.css';
 import 'primeflex/primeflex.css'
 import 'primeicons/primeicons.css'
 import './theme.css';
-import { BrowserRouter, HashRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage';
 
 function App() {
