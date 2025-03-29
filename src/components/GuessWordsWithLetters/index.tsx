@@ -7,6 +7,7 @@ import { Divider } from 'primereact/divider';
 import { reset, $wordsToGuess, $wordsFound, $wordsRemaining, $maxWordsCount, $maxWordLength, setMaxWordsCount, setMaxWordLength, reshuffleLetters, $letters, $trials, findWordFx, setTrials, $buttonsMode, setButtonsMode, addLetterHelp, $lettersHelp } from '../../state/wordsFromLetters';
 import { LetterCanvas } from '../LettersCanvas';
 import { LettersButton } from '../LettersButton';
+import { Word } from '../../state/words';
 
 export const GuessWordsWithLetters = () => {
     const wordsToGuess = useUnit($wordsToGuess);
@@ -19,7 +20,7 @@ export const GuessWordsWithLetters = () => {
     const trials = useUnit($trials);
     const [selectedWord, setSelectedWord] = useState<string|null>();
     const [optionsMenuVisible, setOptionsMenuVisible] = useState<boolean>(false);
-    const [helpDefinition, setHelpDefinition] = useState<string|null>(null);
+    const [helpDefinition, setHelpDefinition] = useState<Word|null>(null);
     const isMobile = ('ontouchstart' in document.documentElement);
     const forcedButtonsMode = !isMobile || letters.length >= 7;
     const buttonsMode = useUnit($buttonsMode) || forcedButtonsMode;
@@ -30,8 +31,7 @@ export const GuessWordsWithLetters = () => {
     }
 
     const needHelp = (firstAvailable?: boolean) => {
-        const def = (firstAvailable ? wordsRemaining.find(w => !!w.definition)?.definition : wordsRemaining[Math.round(Math.random() * wordsRemaining.length)]?.definition) ?? null;
-        setHelpDefinition(def);
+        setHelpDefinition((firstAvailable ? wordsRemaining.find(w => !!w.definition) : wordsRemaining[Math.round(Math.random() * wordsRemaining.length)]) ?? null);
     }
 
     return (
@@ -97,13 +97,14 @@ export const GuessWordsWithLetters = () => {
             <Button severity='info' onClick={() => reset()}><i className='pi pi-refresh' /><span className='ml-2 font-bold'>Nouvelle partie</span></Button>
         </div>
         <Dialog header='Definitions' visible={helpDefinition !== null} onHide={() => { setHelpDefinition(null); setTrials(0); }} dismissableMask={true}>
-            {helpDefinition !== null && (
-                <div className={helpDefinition?.trim() ? 'text-primary' : 'text-red-500'}>
-                    {helpDefinition?.trim() 
-                    ? helpDefinition 
+            {helpDefinition !== null && (<>
+                <div className='font-italic text-sm mb-2'>{helpDefinition.key.length} lettres</div>
+                <div className={helpDefinition?.definition?.trim() ? 'text-primary' : 'text-red-500'}>
+                    {helpDefinition?.definition?.trim() 
+                    ? helpDefinition.definition 
                     : 'Désolé pas de définitions de disponible. Peut être la prochaine fois.'}
                 </div>
-            )}
+            </>)}
         </Dialog>
     </div>
     );

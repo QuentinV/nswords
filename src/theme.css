@@ -26,6 +26,10 @@
     background-color: #121212;
 }
 
+.p-dialog-header {
+    padding:  1.5rem;
+}
+
 .elem-ok {
     color: green;
 }
