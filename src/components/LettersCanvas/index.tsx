@@ -92,10 +92,10 @@ export const LetterCanvas: React.FC<LetterCanvasProps> = ({ letters, onWordCompl
 
 		letterPositions.forEach((letter, index) => {
 			const inBounds =
-			x > letter.x - letter.width / 2 &&
-			x < letter.x + letter.width / 2 &&
-			y > letter.y - letter.height / 2 &&
-			y < letter.y + letter.height / 2;
+			(x > letter.x - 10 - letter.width / 2) &&
+			(x < letter.x + 10 + letter.width / 2) &&
+			(y > letter.y - 10 - letter.height / 2) &&
+			(y < letter.y + 10 + letter.height / 2);
 
 			if (inBounds) {
 				if (!activeLettersIndexes.current.has(index)) {

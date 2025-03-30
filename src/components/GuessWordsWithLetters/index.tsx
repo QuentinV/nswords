@@ -87,8 +87,8 @@ export const GuessWordsWithLetters = () => {
         </div>
         <Divider className='mt-1' />
         {!!wordsRemaining.length && (<div className={`mt-2 text-center relative ${!buttonsMode && 'h-15rem'}`}>
-            {!!wordsToGuess.length && (<div className='text-right absolute top-0 z-5' style={{ right: '-15px'}}><i className='pi pi-refresh' onClick={() => reshuffleLetters()} /></div>)}
-            {!forcedButtonsMode && !!wordsToGuess.length && (<div className='text-right absolute z-5' style={{ top: '30px', right: '-15px'}}><i className='pi pi-table' onClick={() => setButtonsMode(!buttonsMode)} /></div>)}
+            {!!wordsToGuess.length && (<div className='text-right absolute top-0 z-5' style={{ right: '-15px'}}><i className='pi pi-refresh text-lg' onClick={() => reshuffleLetters()} /></div>)}
+            {!forcedButtonsMode && !!wordsToGuess.length && (<div className='text-right absolute z-5' style={{ top: '30px', right: '-15px'}}><i className='pi pi-table text-lg' onClick={() => setButtonsMode(!buttonsMode)} /></div>)}
             {!buttonsMode && <LetterCanvas letters={letters} onWordComplete={word => onWordComplete(word)} onLetterSelected={l => setSelectedWord((selectedWord ?? '') + l)} />}
             {buttonsMode && (<LettersButton letters={letters} onWordComplete={word => onWordComplete(word)} onLetterSelected={l => setSelectedWord((selectedWord ?? '') + l)} />) }
         </div>)}
